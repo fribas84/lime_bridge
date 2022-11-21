@@ -10,7 +10,8 @@ contract Bridge is AccessControl{
     uint public constant LOCK_TIME = 45 seconds;
     enum Network{GOERLI,MUMBAI,BSC}
     address private _LMT;
-
+    uint balaceLMT;
+    
     struct txToBridge(
         address orginator;
         uint amount;
@@ -25,7 +26,8 @@ contract Bridge is AccessControl{
     mapping(bytes32=>txToBridge) TransferIDMapping;
 
     event TokenAddressChanged(address user,address newTokenAddress);
-    event NewTransferBridgeRequest(address user,uint amount,Network network )
+    event NewTransferBridgeRequest(address user,uint amount,Network network);
+    event DestinationTransferCompleted(addess user, uint amount);
 
     modifier tokensTransferable(address _sender, uint256 _amount) {
         require(_amount > 0, "LMT amount must be > 0");
@@ -102,6 +104,12 @@ contract Bridge is AccessControl{
         return transferId;
     }
 
+    function initDestinationTransfer(
+        int _amount,
+        Network _destination,
+        bytes32 _hashLock
+        
+        ) payable returns(bytes32)
 
 
 
