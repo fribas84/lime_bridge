@@ -11,11 +11,9 @@ const {
 
         // Contracts are deployed using the first signer/account by default
         const [owner, account1, account2, account3] = await ethers.getSigners();
-    
         const LimeToken = await ethers.getContractFactory("LimeToken");
         const limeToken = await LimeToken.deploy();
         console.log("Lime Token Address: " + limeToken.address);
-    
         return { limeToken,owner, account1, account2, account3 };
     }
     
@@ -30,12 +28,34 @@ const {
 
         }),
         it("Owner should be able to pause the LMT contract", async () => {
-
+            const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
+            const tkns = "10000.0";
+            await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
+            const tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
+            await limeToken.pause();
+            const status = await limeToken.paused();
+            expect(status).to.equal(true);
         }),
         it("Owner should be able to resume the LMT contract", async () => {
-
+            const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
+            const tkns = "10000.0";
+            await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
+            const tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
+            await limeToken.pause();
+            let status = await limeToken.paused();
+            expect(status).to.equal(true);
+            await limeToken.unpause();
+            status = await limeToken.paused();
+            expect(status).to.equal(false);
         }),
         it("Account1 should be able to transfer to  Account2", async ()=> {
+            const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
+            const tkns = "10000.0";
+            await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
+            const tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
 
         }),
         it("Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner", async () => {
