@@ -54,9 +54,14 @@ const {
             const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
             const tkns = "10000.0";
             await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
-            const tkntInAccount1= await limeToken.balanceOf(account1.address);
+            let tkntInAccount1= await limeToken.balanceOf(account1.address);
             expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
-
+            const tknsTx = "5000.0";
+            await limeToken.connect(account1).transfer(account2.address,ethers.utils.parseEther(tknsTx));
+            const tkntInAccount2= await limeToken.balanceOf(account2.address);
+            tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(ethers.utils.formatEther(tkntInAccount2)).to.equal(tknsTx);
+            expect(ethers.utils.formatEther(tkntInAccount1)).to.equal(tknsTx);
         }),
         it("Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner", async () => {
 
