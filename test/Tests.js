@@ -64,9 +64,28 @@ const {
             expect(ethers.utils.formatEther(tkntInAccount1)).to.equal(tknsTx);
         }),
         it("Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner", async () => {
-
+            const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
+            const tkns = "10000.0";
+            await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
+            let tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
+            const allowTkns = ethers.utils.parseEther("5000");
+            await limeToken.connect(account1).approve(owner.address,allowTkns);
+            await limeToken.transferFrom(account1.address,account2.address,allowTkns);
+            const tkntInAccount2= await limeToken.balanceOf(account2.address);
+            tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(ethers.utils.formatEther(tkntInAccount2)).to.equal(ethers.utils.formatEther(allowTkns));
+            expect(ethers.utils.formatEther(tkntInAccount1)).to.equal(ethers.utils.formatEther(allowTkns));
         }),
         it("Account2 cannot do a transferfrom Account1 without allowance", async ()=>{
+            const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
+            const tkns = "10000.0";
+            await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
+            let tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
+            const allowTkns = ethers.utils.parseEther("5000");
+            await expect(limeToken.transferFrom(account1.address,account2.address,allowTkns)).to.revertedWith("ERC20: insufficient allowance");
+
 
         })
 
