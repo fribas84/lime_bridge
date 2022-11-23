@@ -10,18 +10,23 @@ const {
     async function deployTkn() {
 
         // Contracts are deployed using the first signer/account by default
-        const [owner, otherAccount] = await ethers.getSigners();
+        const [owner, account1, account2, account3] = await ethers.getSigners();
     
         const LimeToken = await ethers.getContractFactory("LimeToken");
         const limeToken = await LimeToken.deploy();
         console.log("Lime Token Address: " + limeToken.address);
     
-        return { limeToken,owner, otherAccount };
+        return { limeToken,owner, account1, account2, account3 };
     }
     
 
     describe("LMT basic coverage",() => {
         it("Owner should be able to mint tokens to Account1", async ()=> {
+            const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
+            const tkns = "10000.0";
+            await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
+            const tkntInAccount1= await limeToken.balanceOf(account1.address);
+            expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
 
         }),
         it("Owner should be able to pause the LMT contract", async () => {

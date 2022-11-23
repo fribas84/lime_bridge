@@ -12,7 +12,7 @@ contract Bridge is AccessControl{
     address private _LMT;
     uint balaceLMT;
     
-    struct txToBridge(
+    struct txToBridge {
         address orginator;
         uint amount;
         uint timeLock;
@@ -21,13 +21,13 @@ contract Bridge is AccessControl{
         bool refunded;
         bool isDone;
         bool exists; 
-    )
+    }
 
     mapping(bytes32=>txToBridge) TransferIDMapping;
 
     event TokenAddressChanged(address user,address newTokenAddress);
     event NewTransferBridgeRequest(address user,uint amount,Network network);
-    event DestinationTransferCompleted(addess user, uint amount);
+    event DestinationTransferCompleted(address user, uint amount);
 
     modifier tokensTransferable(address _sender, uint256 _amount) {
         require(_amount > 0, "LMT amount must be > 0");
@@ -37,12 +37,12 @@ contract Bridge is AccessControl{
     }
 
     modifier futureTimelock(uint256 _time) {
-        require(_time > now, "Timelock time must be in the future");
+        require(_time > block.timestamp, "Timelock time must be in the future");
         _;
     }
     constructor(address lmtAddress){
         _grantRole(DEFAULT_ADMIN_ROLE,msg.sender);
-        _setLMT(lmtAddress);
+        _setLMT(lmtAddress, msg.sender);
     }
 
     function getLMT() public view returns(address){
@@ -62,7 +62,7 @@ contract Bridge is AccessControl{
     function requestTransaction(
         uint _amount,
         Network _destination,
-        bytes32 _hashLock,
+        bytes32 _hashLock
         )
     public
     payable
@@ -72,8 +72,7 @@ contract Bridge is AccessControl{
             msg.sender,
             _amount,
             _destination,
-            _hashLock,
-            timeLock)
+            _hashLock);
 
     }
     function _requestTransaction(address sender,
@@ -83,24 +82,24 @@ contract Bridge is AccessControl{
         private
         returns (bytes32) {    
         uint timeLock = block.timestamp + LOCK_TIME;
-        txToBridge newTxToBridge = (sender,_amount,timeLock,network,false,true);
+        txToBridge memory newTxToBridge = txToBridge(sender,_amount,timeLock,_destination,false,false,false,true);
         bytes32 transferId = keccak256(abi.encodePacked(
             sender,
             _amount,
             _destination,
             _hashLock,
-            timeLock,
-        ))
+            timeLock
+        ));
 
         if(TransferIDMapping[transferId].exists == true){
             revert("Transfer already in progress");
         }
 
         if(!IERC20(_LMT).transferFrom(sender,address(this),_amount)){
-            revert("Transfer from LMT to bridge failed")
-        };
+            revert("Transfer from LMT to bridge failed");
+        }
         TransferIDMapping[transferId] = newTxToBridge;
-        emit NewTransferBridgeRequest(sender,amount,destination);
+        emit NewTransferBridgeRequest(sender,_amount,_destination);
         return transferId;
     }
 
@@ -109,8 +108,6 @@ contract Bridge is AccessControl{
         Network _destination,
         bytes32 _hashLock
         
-        ) payable returns(bytes32)
-
-
-
+        ) public payable returns(bytes32) {}
+        
 }
