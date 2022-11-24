@@ -5,7 +5,7 @@ const {
   const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
   const { expect } = require("chai");
 
-  describe("Bridge", () => {
+  describe("LMT Token", () => {
 
     async function deployTkn() {
 
@@ -17,8 +17,7 @@ const {
         return { limeToken,owner, account1, account2, account3 };
     }
     
-
-    describe("LMT basic coverage",() => {
+    describe("Basic ERC20 functions",() => {
         it("Owner should be able to mint tokens to Account1", async ()=> {
             const {limeToken,owner, account1, account2, account3 } = await loadFixture(deployTkn);
             const tkns = "10000.0";
@@ -85,11 +84,7 @@ const {
             expect(tkns).to.equal(ethers.utils.formatEther(tkntInAccount1));
             const allowTkns = ethers.utils.parseEther("5000");
             await expect(limeToken.transferFrom(account1.address,account2.address,allowTkns)).to.revertedWith("ERC20: insufficient allowance");
-
-
         })
-
-
     })
 
 });

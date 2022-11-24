@@ -3,11 +3,12 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "hardhat/console.sol";
 
 
 contract Bridge is AccessControl{
 
-    uint public constant LOCK_TIME = 45 seconds;
+    uint8 public constant LOCK_TIME = 45 seconds;
     enum Network{GOERLI,MUMBAI,BSC}
     address private _LMT;
     uint balaceLMT;
