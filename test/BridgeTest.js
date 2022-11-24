@@ -54,10 +54,20 @@ const newHashLock = () => {
             expect(lockTime).to.equal(45);
         }),
         it("Pausable", async ()=>{
-            console.log("To implement");
+            const {bridge} = await loadFixture(ContractsTkn);
+            await bridge.pause();
+            const status = await bridge.paused();
+            expect(status).to.equal(true);
+
         }),
         it("Resumable", async ()=>{
-            console.log("To implement");
+            const {bridge} = await loadFixture(ContractsTkn);
+            await bridge.pause();
+            let status = await bridge.paused();
+            expect(status).to.equal(true);
+            await bridge.unpause();
+            status = await bridge.paused();
+            expect(status).to.equal(false);
         })
     })
 

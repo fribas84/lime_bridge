@@ -3,10 +3,11 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "hardhat/console.sol";
 
 
-contract Bridge is AccessControl{
+contract Bridge is AccessControl,Pausable{
 
     uint8 public constant LOCK_TIME = 45 seconds;
     enum Network{GOERLI,MUMBAI,BSC}
@@ -50,7 +51,7 @@ contract Bridge is AccessControl{
         return _LMT;
     }
 
-    function setLMT(address lmtAddress) public onlyRole(DEFAULT_ADMIN_ROLE){
+    function setLMT(address lmtAddress) public whenNotPaused onlyRole(DEFAULT_ADMIN_ROLE){
         _setLMT(lmtAddress,msg.sender);
     }
 
@@ -67,6 +68,7 @@ contract Bridge is AccessControl{
         )
     public
     payable
+    whenNotPaused
     tokensTransferable(msg.sender, _amount)
     returns(bytes32) {
         return _requestTransaction(
@@ -109,5 +111,16 @@ contract Bridge is AccessControl{
         bytes32 _hashLock
         
         ) public payable returns(bytes32) {}
+
+    function pause() public virtual {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Bridge: Admin Role can only pause the contract");
+        _pause();
+    }
+
+ 
+    function unpause() public virtual {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Bridge: Admin Role can only unpause the contract");
+        _unpause();
+    }
         
 }
