@@ -117,7 +117,6 @@ const newHashLock = () => {
                 bridge.connect(account1)
                 .requestTransaction(allowTkns2,destNetwork,hashlock.hash))
                 .to.revertedWith('Transfer already in progress');
-           
         })
 
     })
