@@ -88,8 +88,7 @@ contract Bridge is AccessControl{
             sender,
             _amount,
             _destination,
-            _hashLock,
-            timeLock
+            _hashLock
         ));
 
         if(TransferIDMapping[transferId].exists == true){

@@ -21,7 +21,7 @@ const newHashLock = () => {
     }
   }
 
-  //
+//
 
   describe("Bridge", () => {
 
@@ -77,7 +77,6 @@ const newHashLock = () => {
             const hashlock  = newHashLock();
             const destNetwork = 0;
             const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
-
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [sender,amount,destination] = newTransferBridgeRequest.args;
@@ -85,8 +84,7 @@ const newHashLock = () => {
             expect(amount).to.equal(allowTkns);
             expect(destination).to.equal(destNetwork);
             
-        })
-
+        }),
         it("Request Transaction should be reverted when allowance is not enough",async ()=> {
             const {limeToken,bridge,account1} = await loadFixture(ContractsTkn);
             const allowTkns = ethers.utils.parseEther("4000");
@@ -99,8 +97,27 @@ const newHashLock = () => {
                 hashlock.hash))
                 .to.revertedWith("LMT allowance must be >= amount");
 
- 
-            
+        }),
+        it("Request Transaction should failed when is repited",async ()=> {
+            const {limeToken,bridge,account1} = await loadFixture(ContractsTkn);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken.connect(account1).approve(bridge.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 0;
+            const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [sender,amount,destination] = newTransferBridgeRequest.args;
+            expect(sender).to.equal(account1.address);
+            expect(amount).to.equal(allowTkns);
+            expect(destination).to.equal(destNetwork);
+            const allowTkns2 = ethers.utils.parseEther("2000");
+            await limeToken.connect(account1).approve(bridge.address,allowTkns);
+            await expect(
+                bridge.connect(account1)
+                .requestTransaction(allowTkns2,destNetwork,hashlock.hash))
+                .to.revertedWith('Transfer already in progress');
+           
         })
 
     })
