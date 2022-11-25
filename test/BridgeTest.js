@@ -89,7 +89,10 @@ const newHashLock = () => {
             const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
-            const [sender,amount,destination] = newTransferBridgeRequest.args;
+            const [sender,amount,destination,timelock, received_hashlock, bridgeTransactionID] = newTransferBridgeRequest.args;
+            console.log(bridgeTransactionID);
+            console.log(received_hashlock);
+            console.log(timelock);
             expect(sender).to.equal(account1.address);
             expect(amount).to.equal(allowTkns);
             expect(destination).to.equal(destNetwork);
@@ -105,7 +108,7 @@ const newHashLock = () => {
                 ethers.utils.parseEther("5000"),
                 destNetwork,
                 hashlock.hash))
-                .to.revertedWith("LMT allowance must be >= amount");
+                .to.revertedWith("[Tokens Transfer] LMT allowance must be >= amount");
 
         }),
         it("Request Transaction should failed when is repited",async ()=> {
