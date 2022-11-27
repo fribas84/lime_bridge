@@ -13,6 +13,8 @@ contract Bridge is AccessControl,Pausable{
     enum Network{GOERLI,MUMBAI,BSC}
     address private _LMT;
     uint balaceLMT;
+
+    uint balance;
     
     struct txToBridge {
         address orginator;
@@ -26,17 +28,22 @@ contract Bridge is AccessControl,Pausable{
     }
 
     mapping(bytes32=>txToBridge) TransferIDMapping;
-    mapping(address=>bool) validatorsMapping;
+   
+    mapping(Network=>address) bridgesAddresses;
 
     event TokenAddressChanged(address user,address newTokenAddress);
     event NewTransferBridgeRequest(address user,uint amount,Network network,uint timelock, bytes32 hashlock, bytes32 id);
     event DestinationTransferCompleted(address user, uint amount);
 
-    modifier onlyValidator(address _sender){
-        require(validatorsMapping[_sender]==true,"[Validator] Sender is not a validator");
-        _;
-    }
+    // The Validator modifier will be use when using an external validator.
 
+    // modifier onlyValidator(address _sender){
+    //     require(validatorsMapping[_sender]==true,"[Validator] Sender is not a validator");
+    //     _;
+    // }
+    // For further use
+    // mapping(address=>bool) validatorsMapping;
+    
     modifier tokensTransferable(address _sender, uint256 _amount) {
         require(_amount > 0, "[Tokens Transfer] LMT amount must be > 0");
         require(IERC20(_LMT).allowance(_sender, address(this)) >= _amount,
@@ -99,6 +106,7 @@ contract Bridge is AccessControl,Pausable{
             _hashLock
         ));
 
+        
         if(TransferIDMapping[transferId].exists == true){
             revert("[Bridge] Transfer already in progress");
         }
@@ -106,29 +114,45 @@ contract Bridge is AccessControl,Pausable{
         if(!IERC20(_LMT).transferFrom(sender,address(this),_amount)){
             revert("[Bridge] Transfer from LMT to bridge failed");
         }
+        balance += _amount;
         TransferIDMapping[transferId] = newTxToBridge;
-        validatorsMapping[sender] = true;
+        // To be used if an external validator is developed.
+        //validatorsMapping[sender] = true;
         emit NewTransferBridgeRequest(sender,_amount,_destination,timeLock,_hashLock,transferId);
         return transferId;
     }
 
     function initDestinationTransfer(
-        int _amount,
+        uint _amount,
         Network _destination,
         bytes32 _hashLock, 
         bytes32 _transferId       
         )
         external payable
-        onlyValidator(msg.sender) 
-        returns(bytes32)  {
-                        
-
+        //onlyValidator(msg.sender) 
+        {
+            require(_amount <= balance,"Bridge: Not enough balance in bridge ");
+            require(bridgesAddresses[_destination] == address(this), "Bridge: Wrong bridge destination");
+            _initDestinationTransfer(
+                        _amount,
+                        _destination,
+                        _hashLock, 
+                        _transferId  
+            );
 
         }
 
-    // function _initDestinationTransfer(
+    function _initDestinationTransfer(
+        uint _amount,
+        Network _destination,
+        bytes32 _hashLock, 
+        bytes32 _transferId  
 
-    // ) internal
+     ) internal {
+
+        
+        
+     }
 
     function pause() public virtual {
         require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Bridge: Admin Role can only pause the contract");
@@ -139,5 +163,4 @@ contract Bridge is AccessControl,Pausable{
         require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Bridge: Admin Role can only unpause the contract");
         _unpause();
     }
-        
 }
