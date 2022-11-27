@@ -13,9 +13,7 @@ contract Bridge is AccessControl,Pausable{
     enum Network{GOERLI,MUMBAI,BSC}
     address private _LMT;
     uint balaceLMT;
-
-    uint balance;
-    
+        
     struct txToBridge {
         address orginator;
         uint amount;
@@ -27,13 +25,21 @@ contract Bridge is AccessControl,Pausable{
         bool exists; 
     }
 
+    mapping(address=>uint) withdrawableMapping;
+    uint debt;
+    Network immutable myNetwork;
+    
+
     mapping(bytes32=>txToBridge) TransferIDMapping;
+    mapping(bytes32=>txToBridge) InboundTxMapping;
    
     mapping(Network=>address) bridgesAddresses;
 
     event TokenAddressChanged(address user,address newTokenAddress);
     event NewTransferBridgeRequest(address user,uint amount,Network network,uint timelock, bytes32 hashlock, bytes32 id);
+    event NewTransferAvailable(address user);
     event DestinationTransferCompleted(address user, uint amount);
+    event Widthdraw(address user, uint amount);
 
     // The Validator modifier will be use when using an external validator.
 
@@ -55,9 +61,13 @@ contract Bridge is AccessControl,Pausable{
         require(_time > block.timestamp, "[Timelock] Timelock time must be in the future");
         _;
     }
-    constructor(address lmtAddress){
+
+    
+    constructor(address lmtAddress, Network _myNetwork){
         _grantRole(DEFAULT_ADMIN_ROLE,msg.sender);
         _setLMT(lmtAddress, msg.sender);
+        myNetwork = _myNetwork;
+        bridgesAddresses[myNetwork] = address(this);
     }
 
     function getLMT() public view returns(address){
@@ -114,7 +124,6 @@ contract Bridge is AccessControl,Pausable{
         if(!IERC20(_LMT).transferFrom(sender,address(this),_amount)){
             revert("[Bridge] Transfer from LMT to bridge failed");
         }
-        balance += _amount;
         TransferIDMapping[transferId] = newTxToBridge;
         // To be used if an external validator is developed.
         //validatorsMapping[sender] = true;
@@ -124,17 +133,21 @@ contract Bridge is AccessControl,Pausable{
 
     function initDestinationTransfer(
         uint _amount,
+        uint timeLock,
         Network _destination,
         bytes32 _hashLock, 
         bytes32 _transferId       
         )
         external payable
         //onlyValidator(msg.sender) 
-        {
-            require(_amount <= balance,"Bridge: Not enough balance in bridge ");
-            require(bridgesAddresses[_destination] == address(this), "Bridge: Wrong bridge destination");
+        {   
+            uint balance = IERC20(_LMT).balanceOf(address(this)) - debt;
+            require(_amount <= balance,"[Bridge] Not enough balance in bridge ");
+            require(bridgesAddresses[_destination] == address(this), "[Bridge] Wrong bridge destination");
             _initDestinationTransfer(
+                        msg.sender,
                         _amount,
+                        timeLock,
                         _destination,
                         _hashLock, 
                         _transferId  
@@ -143,24 +156,50 @@ contract Bridge is AccessControl,Pausable{
         }
 
     function _initDestinationTransfer(
+        address _sender,
         uint _amount,
+        uint timeLock,
         Network _destination,
         bytes32 _hashLock, 
         bytes32 _transferId  
 
      ) internal {
 
-        
-        
+        txToBridge memory inboundTxToBridge = txToBridge(_sender,_amount,timeLock,_destination,false,false,false,true);
+        bytes32 transferId = keccak256(abi.encodePacked(
+            _sender,
+            _amount,
+            _destination,
+            _hashLock
+        ));
+        require(transferId == _transferId,"[Brigde] Transfer ID don't match");
+        require(InboundTxMapping[_transferId].exists == false, "[Bridge] Trasfer Id already exists");
+        InboundTxMapping[_transferId] = inboundTxToBridge;
+        emit NewTransferAvailable(_sender);
+        debt +=_amount;
+        withdrawableMapping[_sender] = _amount;
      }
 
-    function pause() public virtual {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Bridge: Admin Role can only pause the contract");
+    function pause() public virtual onlyRole(DEFAULT_ADMIN_ROLE){
         _pause();
     }
 
-    function unpause() public virtual {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Bridge: Admin Role can only unpause the contract");
+    function unpause() public virtual onlyRole(DEFAULT_ADMIN_ROLE){
+        
         _unpause();
+    }
+
+    function setDestinationAddress(Network _network, address _bridgeAddress) public  onlyRole(DEFAULT_ADMIN_ROLE){
+        bridgesAddresses[_network] = _bridgeAddress;
+    }
+
+    function withdraw() public {
+        require(withdrawableMapping[msg.sender]>0,"[Bridge] No found to widthdraw"); //checks
+        uint amounToTx = withdrawableMapping[msg.sender]; //effects
+        withdrawableMapping[msg.sender] = 0;
+        debt -= amounToTx;
+        emit Widthdraw(msg.sender,amounToTx);
+        IERC20(_LMT).transfer(msg.sender,amounToTx); //itnereactions
+        console.log("after tx");
     }
 }
