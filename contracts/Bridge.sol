@@ -9,7 +9,7 @@ import "hardhat/console.sol";
 
 contract Bridge is AccessControl,Pausable{
 
-    uint8 public constant LOCK_TIME = 45 seconds;
+    uint8 public constant LOCK_TIME = 15 seconds;
     enum Network{GOERLI,MUMBAI,BSC}
     address private _LMT;
     uint balaceLMT;
@@ -193,13 +193,25 @@ contract Bridge is AccessControl,Pausable{
         bridgesAddresses[_network] = _bridgeAddress;
     }
 
-    function withdraw() public {
-        require(withdrawableMapping[msg.sender]>0,"[Bridge] No found to widthdraw"); //checks
-        uint amounToTx = withdrawableMapping[msg.sender]; //effects
+    function withdraw(bytes32 _transferId) public {
+        //checks
+        console.log(block.timestamp);
+        console.log(InboundTxMapping[_transferId].timeLock);
+        require(withdrawableMapping[msg.sender]>0,"[Bridge] No funds to widthdraw"); 
+        require(InboundTxMapping[_transferId].exists == true,"[Bridge] Transfer ID doesn't exists");
+        require(block.timestamp>InboundTxMapping[_transferId].timeLock,"[Bridge] Timelock didn't expired");
+        require(InboundTxMapping[_transferId].withdrawn == false, "[Bridge] Transfer ID was already widthdrawn");
+        require(InboundTxMapping[_transferId].refunded == false, "[Bridge] Transfer ID was refunded");
+        require(InboundTxMapping[_transferId].isDone == false,"[Bridge] Transfer ID was already commited");
+        //Effects
+        uint amounToTx = withdrawableMapping[msg.sender]; 
         withdrawableMapping[msg.sender] = 0;
         debt -= amounToTx;
+        //Interactions
         emit Widthdraw(msg.sender,amounToTx);
-        IERC20(_LMT).transfer(msg.sender,amounToTx); //itnereactions
-        console.log("after tx");
+        IERC20(_LMT).transfer(msg.sender,amounToTx); 
+   
+
     }
+
 }

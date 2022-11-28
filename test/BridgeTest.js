@@ -77,10 +77,10 @@ const wait = (milliseconds) => {
             const addr = await bridge.getLMT();
             expect(addr).to.equal(limeToken.address);
         })
-        it("Lock Time should be equal to 45 seconds", async ()=>{
+        it("Lock Time should be equal to 15 seconds", async ()=>{
             const {limeToken,bridge} = await loadFixture(ContractsTkn);
             const lockTime = await bridge.LOCK_TIME();
-            expect(lockTime).to.equal(45);
+            expect(lockTime).to.equal(15);
         }),
         it("Pausable", async ()=>{
             const {bridge} = await loadFixture(ContractsTkn);
@@ -204,9 +204,10 @@ const wait = (milliseconds) => {
             const txReceipt2 = await initDestinationTransfer.wait();
             const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
             expect(user).to.equal(initDestinationTransferResult.args.user);
-            const withdrawRequest = await bridge2.connect(account1).withdraw();
+            await wait(20000);
+            const withdrawRequest = await bridge2.connect(account1).withdraw(transferId);
             const txReceiptWithdraw = await withdrawRequest.wait();
-            console.log(txReceiptWithdraw);
+            console.log(txReceiptWithdraw.events);
             const newBal = await limeToken1.balanceOf(account1.address);
             const newBalBridge2 = await limeToken2.balanceOf(bridge2.address);
             console.log(newBal);
@@ -214,6 +215,29 @@ const wait = (milliseconds) => {
             console.log(await limeToken2.balanceOf(account1.address));
             console.log(await limeToken1.balanceOf(bridge1.address));
         })
+
+        it("Widthdraw should revert if Timelock is not expired", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const bal = await limeToken1.balanceOf(account1.address);
+            const balBridge2 = await limeToken2.balanceOf(bridge2.address);
+            console.log(bal);
+            console.log(balBridge2);
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const txReceipt = await newRequestTransaction.wait();
+            console.log(await limeToken1.balanceOf(account1.address));
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId);
+            const txReceipt2 = await initDestinationTransfer.wait();
+            const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
+            expect(user).to.equal(initDestinationTransferResult.args.user);
+            await expect(bridge2.connect(account1).withdraw(transferId)).to.rejectedWith("[Bridge] Timelock didn't expired");
+        })
+
 
 
     })
