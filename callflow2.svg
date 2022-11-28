@@ -1,0 +1,224 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="722pt" height="624pt" viewBox="0.00 0.00 722.09 624">
+<g id="graph0" class="graph" transform="translate(296.61856021097105,200.68820806893282) scale(0.6243652437539563)" data-name="G">
+
+<polygon fill="#2e3e56" stroke="none" points="-4,4 -4,-620 718.09,-620 718.09,4 -4,4"/>
+<g id="clust1" class="cluster" data-name="clusterBridge">
+
+<path fill="#445773" stroke="#445773" d="M20,-8C20,-8 694.09,-8 694.09,-8 700.09,-8 706.09,-14 706.09,-20 706.09,-20 706.09,-459 706.09,-459 706.09,-465 700.09,-471 694.09,-471 694.09,-471 20,-471 20,-471 14,-471 8,-465 8,-459 8,-459 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="357.05" y="-454.4" font-family="Times,serif" font-size="14.00" fill="#f0f0f0" style="">Bridge</text>
+</g>
+<g id="clust2" class="cluster" data-name="cluster_01">
+
+<polygon fill="#2e3e56" stroke="black" points="40.93,-479 40.93,-608 384.01,-608 384.01,-479 40.93,-479"/>
+<text text-anchor="middle" x="212.47" y="-591.4" font-family="Times,serif" font-size="14.00" style="">Legend</text>
+</g>
+<!-- Bridge.tokensTransferable -->
+<g id="node1" class="node" pointer-events="visible" data-name="Bridge.tokensTransferable">
+
+<polygon fill="#edad56" stroke="#1bc6a6" stroke-width="3" points="441.1,-192.54 441.1,-207.46 387.16,-218 310.87,-218 256.92,-207.46 256.92,-192.54 310.87,-182 387.16,-182 441.1,-192.54"/>
+<polygon fill="none" stroke="#1bc6a6" stroke-width="3" points="445.1,-189.25 445.1,-210.75 387.54,-222 310.48,-222 252.92,-210.75 252.92,-189.25 310.48,-178 387.54,-178 445.1,-189.25" style=""/>
+<text text-anchor="middle" x="349.01" y="-195.8" font-family="Times,serif" font-size="14.00">tokensTransferable</text>
+</g>
+<!-- Bridge.IERC20 -->
+<g id="node15" class="node" pointer-events="visible" data-name="Bridge.IERC20">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="592.12" cy="-229" rx="42.88" ry="18"/>
+<text text-anchor="middle" x="592.12" y="-224.8" font-family="Times,serif" font-size="14.00">IERC20</text>
+</g>
+<!-- Bridge.tokensTransferable&#45;&gt;Bridge.IERC20 -->
+<g id="edge1" class="edge" data-name="Bridge.tokensTransferable-&gt;Bridge.IERC20">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M446.34,-211.59C476.98,-215.27 509.79,-219.22 536.42,-222.42"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="535.99,-225.89 546.34,-223.61 536.83,-218.94 535.99,-225.89"/>
+</g>
+<!-- Bridge.futureTimelock -->
+<g id="node2" class="node" pointer-events="visible" data-name="Bridge.futureTimelock">
+
+<polygon fill="#edad56" stroke="#1bc6a6" stroke-width="3" points="190.85,-408.54 190.85,-423.46 145.8,-434 82.07,-434 37.02,-423.46 37.02,-408.54 82.07,-398 145.8,-398 190.85,-408.54"/>
+<polygon fill="none" stroke="#1bc6a6" stroke-width="3" points="194.85,-405.37 194.85,-426.63 146.26,-438 81.61,-438 33.02,-426.63 33.02,-405.37 81.61,-394 146.26,-394 194.85,-405.37" style=""/>
+<text text-anchor="middle" x="113.93" y="-411.8" font-family="Times,serif" font-size="14.00">futureTimelock</text>
+</g>
+<!-- Bridge.&lt;Constructor&gt; -->
+<g id="node3" class="node" pointer-events="visible" data-name="Bridge.&lt;Constructor&gt;">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="113.93" cy="-250" rx="67.55" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-245.8" font-family="Times,serif" font-size="14.00">&lt;Constructor&gt;</text>
+</g>
+<!-- Bridge._setLMT -->
+<g id="node6" class="node" pointer-events="visible" data-name="Bridge._setLMT">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="349.01" cy="-312" rx="46.95" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-307.8" font-family="Times,serif" font-size="14.00">_setLMT</text>
+</g>
+<!-- Bridge.&lt;Constructor&gt;&#45;&gt;Bridge._setLMT -->
+<g id="edge3" class="edge" data-name="Bridge.&lt;Constructor&gt;-&gt;Bridge._setLMT">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M164.65,-263.22C203.29,-273.5 256.74,-287.72 295.96,-298.15"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="294.93,-301.5 305.49,-300.69 296.73,-294.74 294.93,-301.5"/>
+</g>
+<!-- Bridge._grantRole -->
+<g id="node16" class="node" pointer-events="visible" data-name="Bridge._grantRole">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="349.01" cy="-366" rx="53.89" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-361.8" font-family="Times,serif" font-size="14.00">_grantRole</text>
+</g>
+<!-- Bridge.&lt;Constructor&gt;&#45;&gt;Bridge._grantRole -->
+<g id="edge2" class="edge" data-name="Bridge.&lt;Constructor&gt;-&gt;Bridge._grantRole">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M174.98,-259C188.05,-262.98 201.16,-268.72 211.87,-277 237.08,-296.49 222.58,-319.61 247.87,-339 258.43,-347.09 271.23,-352.77 284.11,-356.74"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="282.92,-360.04 293.48,-359.26 284.74,-353.28 282.92,-360.04"/>
+</g>
+<!-- Bridge.getLMT -->
+<g id="node4" class="node" pointer-events="visible" data-name="Bridge.getLMT">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="113.93" cy="-304" rx="43.44" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-299.8" font-family="Times,serif" font-size="14.00">getLMT</text>
+</g>
+<!-- Bridge.setLMT -->
+<g id="node5" class="node" pointer-events="visible" data-name="Bridge.setLMT">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="113.93" cy="-196" rx="42.3" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-191.8" font-family="Times,serif" font-size="14.00">setLMT</text>
+</g>
+<!-- Bridge.setLMT&#45;&gt;Bridge._setLMT -->
+<g id="edge4" class="edge" data-name="Bridge.setLMT-&gt;Bridge._setLMT">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M156.3,-200.37C174.8,-204.01 195.98,-210.71 211.87,-223 237.08,-242.49 222.58,-265.61 247.87,-285 259.98,-294.29 275.05,-300.38 289.8,-304.38"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="288.55,-307.69 299.08,-306.58 290.16,-300.87 288.55,-307.69"/>
+</g>
+<!-- Bridge.requestTransaction -->
+<g id="node7" class="node" pointer-events="visible" data-name="Bridge.requestTransaction">
+
+<ellipse fill="#ff9797" stroke="brown" stroke-width="3" cx="113.93" cy="-358" rx="84.51" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-353.8" font-family="Times,serif" font-size="14.00">requestTransaction</text>
+</g>
+<!-- Bridge._requestTransaction -->
+<g id="node8" class="node" pointer-events="visible" data-name="Bridge._requestTransaction">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="349.01" cy="-420" rx="89.17" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-415.8" font-family="Times,serif" font-size="14.00">_requestTransaction</text>
+</g>
+<!-- Bridge.requestTransaction&#45;&gt;Bridge._requestTransaction -->
+<g id="edge5" class="edge" data-name="Bridge.requestTransaction-&gt;Bridge._requestTransaction">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M170.17,-372.69C202.78,-381.37 244.35,-392.42 279.09,-401.67"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="278.06,-405.02 288.63,-404.2 279.86,-398.25 278.06,-405.02"/>
+</g>
+<!-- Bridge._requestTransaction&#45;&gt;Bridge.IERC20 -->
+<g id="edge6" class="edge" data-name="Bridge._requestTransaction-&gt;Bridge.IERC20">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M418.31,-407.5C429.44,-403.83 440.48,-399.09 450.15,-393 505.05,-358.42 550.06,-295.8 573.53,-258.75"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="576.49,-260.61 578.78,-250.26 570.54,-256.93 576.49,-260.61"/>
+</g>
+<!-- Bridge.initDestinationTransfer -->
+<g id="node9" class="node" pointer-events="visible" data-name="Bridge.initDestinationTransfer">
+
+<ellipse fill="#ffbdb9" stroke="brown" stroke-width="3" cx="349.01" cy="-34" rx="101.28" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-29.8" font-family="Times,serif" font-size="14.00">initDestinationTransfer</text>
+</g>
+<!-- Bridge._initDestinationTransfer -->
+<g id="node10" class="node" pointer-events="visible" data-name="Bridge._initDestinationTransfer">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="592.12" cy="-34" rx="105.94" ry="18"/>
+<text text-anchor="middle" x="592.12" y="-29.8" font-family="Times,serif" font-size="14.00">_initDestinationTransfer</text>
+</g>
+<!-- Bridge.initDestinationTransfer&#45;&gt;Bridge._initDestinationTransfer -->
+<g id="edge8" class="edge" data-name="Bridge.initDestinationTransfer-&gt;Bridge._initDestinationTransfer">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M451.56,-34C458.4,-34 465.31,-34 472.22,-34"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="472.01,-37.5 482.01,-34 472.01,-30.5 472.01,-37.5"/>
+</g>
+<!-- Bridge.initDestinationTransfer&#45;&gt;Bridge.IERC20 -->
+<g id="edge7" class="edge" data-name="Bridge.initDestinationTransfer-&gt;Bridge.IERC20">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M422.05,-47.66C431.91,-51.15 441.58,-55.53 450.15,-61 506.14,-96.73 551.29,-161.78 574.37,-199.6"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="571.13,-201 579.26,-207.8 577.14,-197.42 571.13,-201"/>
+</g>
+<!-- Bridge.pause -->
+<g id="node11" class="node" pointer-events="visible" data-name="Bridge.pause">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="113.93" cy="-142" rx="33.05" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-137.8" font-family="Times,serif" font-size="14.00">pause</text>
+</g>
+<!-- Bridge._pause -->
+<g id="node17" class="node" pointer-events="visible" data-name="Bridge._pause">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="349.01" cy="-142" rx="37.71" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-137.8" font-family="Times,serif" font-size="14.00">_pause</text>
+</g>
+<!-- Bridge.pause&#45;&gt;Bridge._pause -->
+<g id="edge9" class="edge" data-name="Bridge.pause-&gt;Bridge._pause">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M148.33,-142C187.28,-142 252.09,-142 297.27,-142"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="297.01,-145.5 307.01,-142 297.01,-138.5 297.01,-145.5"/>
+</g>
+<!-- Bridge.unpause -->
+<g id="node12" class="node" pointer-events="visible" data-name="Bridge.unpause">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="113.93" cy="-88" rx="42.86" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-83.8" font-family="Times,serif" font-size="14.00">unpause</text>
+</g>
+<!-- Bridge._unpause -->
+<g id="node18" class="node" pointer-events="visible" data-name="Bridge._unpause">
+
+<ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="349.01" cy="-88" rx="47.52" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-83.8" font-family="Times,serif" font-size="14.00">_unpause</text>
+</g>
+<!-- Bridge.unpause&#45;&gt;Bridge._unpause -->
+<g id="edge10" class="edge" data-name="Bridge.unpause-&gt;Bridge._unpause">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M158.23,-88C194.5,-88 246.69,-88 287.17,-88"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="287.1,-91.5 297.1,-88 287.1,-84.5 287.1,-91.5"/>
+</g>
+<!-- Bridge.setDestinationAddress -->
+<g id="node13" class="node" pointer-events="visible" data-name="Bridge.setDestinationAddress">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="113.93" cy="-34" rx="97.87" ry="18"/>
+<text text-anchor="middle" x="113.93" y="-29.8" font-family="Times,serif" font-size="14.00">setDestinationAddress</text>
+</g>
+<!-- Bridge.withdraw -->
+<g id="node14" class="node" pointer-events="visible" data-name="Bridge.withdraw">
+
+<ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="349.01" cy="-258" rx="47.52" ry="18"/>
+<text text-anchor="middle" x="349.01" y="-253.8" font-family="Times,serif" font-size="14.00">withdraw</text>
+</g>
+<!-- Bridge.withdraw&#45;&gt;Bridge.IERC20 -->
+<g id="edge11" class="edge" data-name="Bridge.withdraw-&gt;Bridge.IERC20">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M395.93,-252.48C435.96,-247.66 494.1,-240.67 536.51,-235.57"/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="536.89,-239.05 546.4,-234.38 536.05,-232.1 536.89,-239.05"/>
+</g>
+<!-- key -->
+<g id="node19" class="node" pointer-events="visible" data-name="key">
+
+<polygon fill="#edad56" stroke="none" stroke-width="3" points="178.93,-575 48.93,-575 48.93,-487 178.93,-487 178.93,-575"/>
+<text text-anchor="start" x="98.57" y="-556.4" font-family="Times,serif" font-size="14.00">Internal Call</text>
+<text text-anchor="start" x="94.68" y="-536.4" font-family="Times,serif" font-size="14.00">External Call</text>
+<text text-anchor="start" x="72.14" y="-516.4" font-family="Times,serif" font-size="14.00">Defined Contract</text>
+<text text-anchor="start" x="58.54" y="-496.4" font-family="Times,serif" font-size="14.00">Undefined Contract</text>
+</g>
+<!-- key2 -->
+<g id="node20" class="node" pointer-events="visible" data-name="key2">
+
+<polygon fill="#edad56" stroke="none" stroke-width="3" points="376.01,-575 322.01,-575 322.01,-487 376.01,-487 376.01,-575"/>
+<text text-anchor="start" x="339.01" y="-556.4" font-family="Times,serif" font-size="14.00">   </text>
+<text text-anchor="start" x="339.01" y="-536.4" font-family="Times,serif" font-size="14.00">   </text>
+<polygon fill="#445773" stroke="none" points="337.01,-511 337.01,-531 362.01,-531 362.01,-511 337.01,-511"/>
+<text text-anchor="start" x="339.01" y="-516.4" font-family="Times,serif" font-size="14.00">   </text>
+<polygon fill="none" stroke="#e8726d" points="339.01,-493 339.01,-509 360.01,-509 360.01,-493 339.01,-493"/>
+</g>
+<!-- key&#45;&gt;key2 -->
+<g id="edge12" class="edge" data-name="key-&gt;key2">
+
+<path fill="none" stroke="#1bc6a6" stroke-width="2" d="M171.93,-561C240.44,-561 260.68,-561 323.34,-561" style=""/>
+<polygon fill="#1bc6a6" stroke="#1bc6a6" stroke-width="2" points="322.98,-564.5 332.98,-561 322.98,-557.5 322.98,-564.5" style=""/>
+</g>
+<!-- key&#45;&gt;key2 -->
+<g id="edge13" class="edge" data-name="key-&gt;key2">
+
+<path fill="none" stroke="white" stroke-width="2" d="M171.93,-541C240.44,-541 260.68,-541 323.34,-541" style=""/>
+<polygon fill="white" stroke="white" stroke-width="2" points="322.98,-544.5 332.98,-541 322.98,-537.5 322.98,-544.5" style=""/>
+</g>
+</g>
+</svg>

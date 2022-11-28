@@ -1,0 +1,80 @@
+digraph G {
+  graph [ ratio = "auto", page = "100", compound =true, bgcolor = "#2e3e56" ];
+  node [ style = "filled", fillcolor = "#edad56", color = "#edad56", penwidth =3 ];
+  edge [ color = "#fcfcfc", penwidth =2, fontname = "helvetica Neue Ultra Light" ];
+subgraph "clusterBridge" {
+  graph [ label = "Bridge", color = "#445773", fontcolor = "#f0f0f0", style = "rounded", bgcolor = "#445773" ];
+  "Bridge.tokensTransferable" [ label = "tokensTransferable", color = "#1bc6a6", shape =doubleoctagon ];
+  "Bridge.futureTimelock" [ label = "futureTimelock", color = "#1bc6a6", shape =doubleoctagon ];
+  "Bridge.<Constructor>" [ label = "<Constructor>", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge.getLMT" [ label = "getLMT", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge.setLMT" [ label = "setLMT", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge._setLMT" [ label = "_setLMT" ];
+  "Bridge.requestTransaction" [ label = "requestTransaction", color = "brown", fillcolor = "#FF9797" ];
+  "Bridge._requestTransaction" [ label = "_requestTransaction" ];
+  "Bridge.initDestinationTransfer" [ label = "initDestinationTransfer", color = "brown", fillcolor = "#ffbdb9" ];
+  "Bridge._initDestinationTransfer" [ label = "_initDestinationTransfer" ];
+  "Bridge.pause" [ label = "pause", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge.unpause" [ label = "unpause", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge.setDestinationAddress" [ label = "setDestinationAddress", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge.withdraw" [ label = "withdraw", color = "#FF9797", fillcolor = "#FF9797" ];
+  "Bridge.IERC20" [ label = "IERC20" ];
+  "Bridge._grantRole" [ label = "_grantRole" ];
+  "Bridge._pause" [ label = "_pause" ];
+  "Bridge._unpause" [ label = "_unpause" ];
+}
+
+  "Bridge.tokensTransferable";
+  "Bridge.IERC20";
+  "Bridge.<Constructor>";
+  "Bridge._grantRole";
+  "Bridge._setLMT";
+  "Bridge.setLMT";
+  "Bridge.requestTransaction";
+  "Bridge._requestTransaction";
+  "Bridge.initDestinationTransfer";
+  "Bridge._initDestinationTransfer";
+  "Bridge.pause";
+  "Bridge._pause";
+  "Bridge.unpause";
+  "Bridge._unpause";
+  "Bridge.withdraw";
+  "Bridge.tokensTransferable" -> "Bridge.IERC20" [ color = "#1bc6a6" ];
+  "Bridge.<Constructor>" -> "Bridge._grantRole" [ color = "#1bc6a6" ];
+  "Bridge.<Constructor>" -> "Bridge._setLMT" [ color = "#1bc6a6" ];
+  "Bridge.setLMT" -> "Bridge._setLMT" [ color = "#1bc6a6" ];
+  "Bridge.requestTransaction" -> "Bridge._requestTransaction" [ color = "#1bc6a6" ];
+  "Bridge._requestTransaction" -> "Bridge.IERC20" [ color = "#1bc6a6" ];
+  "Bridge.initDestinationTransfer" -> "Bridge.IERC20" [ color = "#1bc6a6" ];
+  "Bridge.initDestinationTransfer" -> "Bridge._initDestinationTransfer" [ color = "#1bc6a6" ];
+  "Bridge.pause" -> "Bridge._pause" [ color = "#1bc6a6" ];
+  "Bridge.unpause" -> "Bridge._unpause" [ color = "#1bc6a6" ];
+  "Bridge.withdraw" -> "Bridge.IERC20" [ color = "#1bc6a6" ];
+
+
+rankdir=LR
+node [shape=plaintext]
+subgraph cluster_01 { 
+label = "Legend";
+key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+  <tr><td align="right" port="i1">Internal Call</td></tr>
+  <tr><td align="right" port="i2">External Call</td></tr>
+  <tr><td align="right" port="i3">Defined Contract</td></tr>
+  <tr><td align="right" port="i4">Undefined Contract</td></tr>
+  </table>>]
+key2 [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+  <tr><td port="i1">&nbsp;&nbsp;&nbsp;</td></tr>
+  <tr><td port="i2">&nbsp;&nbsp;&nbsp;</td></tr>
+  <tr><td port="i3" bgcolor="#445773">&nbsp;&nbsp;&nbsp;</td></tr>
+  <tr><td port="i4">
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="7" color="#e8726d">
+      <tr>
+       <td></td>
+      </tr>
+     </table>
+  </td></tr>
+  </table>>]
+key:i1:e -> key2:i1:w [color="#1bc6a6"]
+key:i2:e -> key2:i2:w [color="white"]
+}
+}

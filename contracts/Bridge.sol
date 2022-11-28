@@ -195,8 +195,6 @@ contract Bridge is AccessControl,Pausable{
 
     function withdraw(bytes32 _transferId) public {
         //checks
-        console.log(block.timestamp);
-        console.log(InboundTxMapping[_transferId].timeLock);
         require(withdrawableMapping[msg.sender]>0,"[Bridge] No funds to widthdraw"); 
         require(InboundTxMapping[_transferId].exists == true,"[Bridge] Transfer ID doesn't exists");
         require(block.timestamp>InboundTxMapping[_transferId].timeLock,"[Bridge] Timelock didn't expired");
