@@ -4,10 +4,11 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
 
-contract Bridge is AccessControl,Pausable{
+contract Bridge is AccessControl,Pausable, ReentrancyGuard{
 
     uint8 public constant LOCK_TIME = 15 seconds;
     enum Network{GOERLI,MUMBAI,BSC}
@@ -193,7 +194,7 @@ contract Bridge is AccessControl,Pausable{
         bridgesAddresses[_network] = _bridgeAddress;
     }
 
-    function withdraw(bytes32 _transferId) public {
+    function withdraw(bytes32 _transferId) public nonReentrant {
         //checks
         require(withdrawableMapping[msg.sender]>0,"[Bridge] No funds to widthdraw"); 
         require(InboundTxMapping[_transferId].exists == true,"[Bridge] Transfer ID doesn't exists");
