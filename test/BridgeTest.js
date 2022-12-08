@@ -115,7 +115,8 @@ const wait = (milliseconds) => {
             await limeToken.connect(account1).approve(bridge.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 0;
-            const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [sender,amount,destination,timelock, received_hashlock, bridgeTransactionID] = newTransferBridgeRequest.args;
@@ -133,10 +134,12 @@ const wait = (milliseconds) => {
             await limeToken.connect(account1).approve(bridge.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 0;
+            const options = {value: ethers.utils.parseEther("0.001")};
             await expect(bridge.connect(account1).requestTransaction(
                 ethers.utils.parseEther("5000"),
                 destNetwork,
-                hashlock.hash))
+                hashlock.hash,
+                options))
                 .to.revertedWith("[Tokens Transfer] LMT allowance must be >= amount");
 
         }),
@@ -146,7 +149,8 @@ const wait = (milliseconds) => {
             await limeToken.connect(account1).approve(bridge.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 0;
-            const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [sender,amount,destination] = newTransferBridgeRequest.args;
@@ -170,17 +174,18 @@ const wait = (milliseconds) => {
             expect(bridge1Balance).to.equal(ethers.utils.parseEther("1000000"));
             expect(bridge2Balance).to.equal(ethers.utils.parseEther("1000000"));
         }),
-        it("User should be able to execue initDestinationTransfer in Bridge 2", async () =>{
+        it("User should be able to execute initDestinationTransfer in Bridge 2", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
             const allowTkns = ethers.utils.parseEther("2000");
             await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 1;
-            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
-            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId);
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
             const txReceipt2 = await initDestinationTransfer.wait();
             const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
             expect(user).to.equal(initDestinationTransferResult.args.user);
@@ -195,12 +200,13 @@ const wait = (milliseconds) => {
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
             console.log(bal);
             console.log(balBridge2);
-            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
             console.log(await limeToken1.balanceOf(account1.address));
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
-            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId);
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
             const txReceipt2 = await initDestinationTransfer.wait();
             const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
             expect(user).to.equal(initDestinationTransferResult.args.user);
@@ -226,12 +232,13 @@ const wait = (milliseconds) => {
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
             console.log(bal);
             console.log(balBridge2);
-            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash);
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
             console.log(await limeToken1.balanceOf(account1.address));
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
-            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId);
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
             const txReceipt2 = await initDestinationTransfer.wait();
             const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
             expect(user).to.equal(initDestinationTransferResult.args.user);

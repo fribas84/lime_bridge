@@ -26,7 +26,11 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         bool refunded;
         bool isDone;
         bool exists;
-    }
+    } 
+
+    uint bridgeFee = 1000000 gwei;
+     
+    
 
     mapping(address => uint) withdrawableMapping;
     uint debt;
@@ -49,6 +53,7 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     event NewTransferAvailable(address user);
     event DestinationTransferCompleted(address user, uint amount);
     event Widthdraw(address user, uint amount);
+    event BridgeFundsWidthdraw(address _user, uint amount);
 
     // The Validator modifier will be use when using an external validator.
 
@@ -59,6 +64,10 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     // For further use
     // mapping(address=>bool) validatorsMapping;
 
+    modifier feeCheck(uint _value) {
+        require(_value>= bridgeFee,"[Fee value] the current paid fee is not enough");
+        _;
+    }
     modifier tokensTransferable(address _sender, uint256 _amount) {
         require(_amount > 0, "[Tokens Transfer] LMT amount must be > 0");
         require(
@@ -161,7 +170,7 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         Network _destination,
         bytes32 _hashLock,
         bytes32 _transferId
-    ) external payable //onlyValidator(msg.sender)
+    ) external payable feeCheck(msg.value) //onlyValidator(msg.sender)
     {
         uint balance = IERC20(_LMT).balanceOf(address(this)) - debt;
         require(_amount <= balance, "[Bridge] Not enough balance in bridge ");
@@ -259,5 +268,18 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         //Interactions
         emit Widthdraw(msg.sender, amounToTx);
         IERC20(_LMT).transfer(msg.sender, amounToTx);
+    }
+
+    function checkBalance() external onlyRole(DEFAULT_ADMIN_ROLE) returns(uint){
+        return address(this).balance;
+    }
+
+    function withdrawFees() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _withdrawFees(payable(msg.sender));
+    }
+
+    function _withdrawFees(address payable _to) internal {
+        (bool sent, bytes memory data) = _to.call{value: address(this).balance }("");
+        require(sent, "[Fee widthdraw] Failed to send Ether");
     }
 }
