@@ -36,10 +36,8 @@ const wait = (milliseconds) => {
         const [owner, account1, account2, account3] = await ethers.getSigners();
         const LimeToken = await ethers.getContractFactory("LimeToken");
         const limeToken = await LimeToken.deploy();
-        console.log("Lime Token Address: " + limeToken.address);
         const Bridge = await ethers.getContractFactory("Bridge");
         const bridge = await Bridge.deploy(limeToken.address,0);
-        console.log("Bridge Address: " + bridge.address);
         const tkns = "10000.0";
         await limeToken.mint(account1.address,ethers.utils.parseEther(tkns));
 
@@ -53,19 +51,14 @@ const wait = (milliseconds) => {
         const LimeToken = await ethers.getContractFactory("LimeToken");
         const limeToken1 = await LimeToken.deploy();
         const limeToken2 = await LimeToken.deploy();
-        console.log("Lime Token 1 Address: " + limeToken1.address);
-        console.log("Lime Token 2 Address: " + limeToken2.address);
         const Bridge = await ethers.getContractFactory("Bridge");
         const bridge1 = await Bridge.deploy(limeToken1.address,0);
         const bridge2 = await Bridge.deploy(limeToken2.address,1);
-        console.log("Bridge 1 Address: " + bridge1.address);
-        console.log("Bridge 2 Address: " + bridge2.address);
         const tkns = "10000.0";
         await limeToken1.mint(account1.address,ethers.utils.parseEther(tkns));
         const bridgeFunds = "1000000.0"
         await limeToken1.mint(bridge1.address,ethers.utils.parseEther(bridgeFunds));
         await limeToken2.mint(bridge2.address,ethers.utils.parseEther(bridgeFunds));
-
         await bridge1.setDestinationAddress(0,bridge2.address);
         await bridge2.setDestinationAddress(0,bridge1.address);
         return {limeToken1,limeToken2,bridge1,bridge2,owner, account1, account2, account3 };
@@ -120,9 +113,6 @@ const wait = (milliseconds) => {
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [sender,amount,destination,timelock, received_hashlock, bridgeTransactionID] = newTransferBridgeRequest.args;
-            console.log(bridgeTransactionID);
-            console.log(received_hashlock);
-            console.log(timelock);
             expect(sender).to.equal(account1.address);
             expect(amount).to.equal(allowTkns);
             expect(destination).to.equal(destNetwork);
@@ -190,7 +180,7 @@ const wait = (milliseconds) => {
             const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
             expect(user).to.equal(initDestinationTransferResult.args.user);
         }),
-        it("Destination Bridge should transfer Tokens to address", async () =>{
+        it("Destination Bridge should transfer the same amount of sent tokens to address", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
             const allowTkns = ethers.utils.parseEther("2000");
             await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
@@ -198,12 +188,9 @@ const wait = (milliseconds) => {
             const destNetwork = 1;
             const bal = await limeToken1.balanceOf(account1.address);
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
-            console.log(bal);
-            console.log(balBridge2);
             const options = {value: ethers.utils.parseEther("0.001")};
             const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
-            console.log(await limeToken1.balanceOf(account1.address));
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
             const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
@@ -213,12 +200,8 @@ const wait = (milliseconds) => {
             await wait(20000);
             const withdrawRequest = await bridge2.connect(account1).withdraw(transferId);
             await withdrawRequest.wait();
-            const newBal = await limeToken1.balanceOf(account1.address);
-            const newBalBridge2 = await limeToken2.balanceOf(bridge2.address);
-            console.log(newBal);
-            console.log(newBalBridge2);
-            console.log(await limeToken2.balanceOf(account1.address));
-            console.log(await limeToken1.balanceOf(bridge1.address));
+            const newBal = await limeToken2.balanceOf(account1.address);
+            expect(newBal).to.equal(allowTkns);   
         }),
 
         it("Widthdraw should revert if Timelock is not expired", async () =>{
@@ -229,12 +212,9 @@ const wait = (milliseconds) => {
             const destNetwork = 1;
             const bal = await limeToken1.balanceOf(account1.address);
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
-            console.log(bal);
-            console.log(balBridge2);
             const options = {value: ethers.utils.parseEther("0.001")};
             const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
-            console.log(await limeToken1.balanceOf(account1.address));
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
             const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
@@ -253,13 +233,11 @@ const wait = (milliseconds) => {
             const destNetwork = 1;
             const bal = await limeToken1.balanceOf(account1.address);
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
-            console.log(bal);
-            console.log(balBridge2);
             const options = {value: ethers.utils.parseEther("0.00001")};
             await expect(bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options)).to.revertedWith("[Fee value] the current paid fee is not enough");
 
         }),
-        it("Bridges balance should increase", async () =>{
+        it("Bridges balances should increase after a full transaction is done", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
             const allowTkns = ethers.utils.parseEther("2000");
             await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
@@ -267,12 +245,9 @@ const wait = (milliseconds) => {
             const destNetwork = 1;
             const bal = await limeToken1.balanceOf(account1.address);
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
-            console.log(bal);
-            console.log(balBridge2);
             const options = {value: ethers.utils.parseEther("0.001")};
             const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
-            console.log(await limeToken1.balanceOf(account1.address));
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
             const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
@@ -289,7 +264,7 @@ const wait = (milliseconds) => {
             console.log(await limeToken2.balanceOf(account1.address));
             console.log(await limeToken1.balanceOf(bridge1.address));
             const balance = await bridge1.getBalance();
-            console.log("balance " + balance);
+            
         })
 
     })
