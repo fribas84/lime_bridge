@@ -114,8 +114,10 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     )
         public
         payable
+        feeCheck(msg.value)
         whenNotPaused
         tokensTransferable(msg.sender, _amount)
+
         returns (bytes32)
     {
         return
@@ -270,7 +272,7 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         IERC20(_LMT).transfer(msg.sender, amounToTx);
     }
 
-    function checkBalance() external onlyRole(DEFAULT_ADMIN_ROLE) returns(uint){
+    function getBalance() external view onlyRole(DEFAULT_ADMIN_ROLE) returns(uint){
         return address(this).balance;
     }
 
