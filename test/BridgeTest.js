@@ -243,8 +243,8 @@ const wait = (milliseconds) => {
             await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 1;
-            const bal = await limeToken1.balanceOf(account1.address);
-            const balBridge2 = await limeToken2.balanceOf(bridge2.address);
+            const bridge1EthBalInitial = await bridge1.getBalance();
+            const bridge2EthBalInitial = await bridge2.getBalance();
             const options = {value: ethers.utils.parseEther("0.001")};
             const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
@@ -257,14 +257,10 @@ const wait = (milliseconds) => {
             await wait(20000);
             const withdrawRequest = await bridge2.connect(account1).withdraw(transferId);
             await withdrawRequest.wait();
-            const newBal = await limeToken1.balanceOf(account1.address);
-            const newBalBridge2 = await limeToken2.balanceOf(bridge2.address);
-            console.log(newBal);
-            console.log(newBalBridge2);
-            console.log(await limeToken2.balanceOf(account1.address));
-            console.log(await limeToken1.balanceOf(bridge1.address));
-            const balance = await bridge1.getBalance();
-            
+            const bridge1EthBalFinal = await bridge1.getBalance();
+            const bridge2EthBalFinal = await bridge2.getBalance();
+            expect(bridge1EthBalFinal).to.greaterThan(bridge1EthBalInitial);
+            expect(bridge2EthBalFinal).to.greaterThan(bridge2EthBalInitial);
         })
 
     })
