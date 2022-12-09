@@ -280,7 +280,7 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     function withdraw(
         bytes32 _transferId
     ) public checksForWithdraw(_transferId,msg.sender) whenNotPaused nonReentrant {    
-        InboundTxMapping[_transferId].withdrawnx` = true;
+        InboundTxMapping[_transferId].withdrawn = true;
         InboundTxMapping[_transferId].isDone = true;
         _requestWithdraw(_transferId,msg.sender);  
     }
