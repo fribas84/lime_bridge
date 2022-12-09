@@ -11,14 +11,13 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     uint8 public constant LOCK_TIME = 15 seconds;
     enum Network {
         GOERLI,
-        MUMBAI,
-        BSC
+        MUMBAI
     }
     address private _LMT;
     uint balaceLMT;
 
     struct txToBridge {
-        address orginator;
+        address user;
         uint amount;
         uint timeLock;
         Network network;
@@ -27,18 +26,12 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         bool isDone;
         bool exists;
     } 
-
     uint bridgeFee = 1000000 gwei;
-     
-    
-
     mapping(address => uint) withdrawableMapping;
     uint debt;
     Network immutable myNetwork;
-
     mapping(bytes32 => txToBridge) TransferIDMapping;
     mapping(bytes32 => txToBridge) InboundTxMapping;
-
     mapping(Network => address) bridgesAddresses;
 
     event TokenAddressChanged(address user, address newTokenAddress);
@@ -54,6 +47,8 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     event DestinationTransferCompleted(address user, uint amount);
     event Widthdraw(address user, uint amount);
     event BridgeFundsWidthdraw(address _user, uint amount);
+    event TransferFromBridge(address user, uint amount);
+    event RefundRequested(address user, bytes32 _transferId);
 
     // The Validator modifier will be use when using an external validator.
 
@@ -63,6 +58,66 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     // }
     // For further use
     // mapping(address=>bool) validatorsMapping;
+
+    modifier checksForWithdraw (bytes32 _transferId,address _sender){
+         require(
+            InboundTxMapping[_transferId].withdrawn == false,
+            "[Bridge] Transfer ID was already widthdrawn"
+        );
+        require(
+            InboundTxMapping[_transferId].user == _sender,
+            "[Bridge] User is not the owner of this Transaction Id"
+        );
+        require(
+            withdrawableMapping[_sender] > 0,
+            "[Bridge] No funds to widthdraw"
+        );
+        require(
+            InboundTxMapping[_transferId].exists == true,
+            "[Bridge] Transfer ID doesn't exists"
+        );
+        require(
+            block.timestamp > InboundTxMapping[_transferId].timeLock,
+            "[Bridge] Timelock didn't expired"
+        );
+        require(
+            InboundTxMapping[_transferId].refunded == false,
+            "[Bridge] Transfer ID was refunded"
+        );
+        require(
+            InboundTxMapping[_transferId].isDone == false,
+            "[Bridge] Transfer ID was already commited"
+        );
+        _;
+    }
+
+     modifier checksForRefund (bytes32 _transferId,address _sender){
+         require(
+            TransferIDMapping[_transferId].withdrawn == false,
+            "[Bridge] Transfer ID was already widthdrawn"
+        );
+        require(
+            TransferIDMapping[_transferId].user == _sender,
+            "[Bridge] User is not the owner of this Transaction Id"
+        );
+        require(
+            TransferIDMapping[_transferId].exists == true,
+            "[Bridge] Transfer ID doesn't exists"
+        );
+        require(
+            block.timestamp > TransferIDMapping[_transferId].timeLock,
+            "[Bridge] Timelock didn't expired"
+        );
+        require(
+            TransferIDMapping[_transferId].refunded == false,
+            "[Bridge] Transfer ID was refunded"
+        );
+        require(
+            TransferIDMapping[_transferId].isDone == false,
+            "[Bridge] Transfer ID was already commited"
+        );
+        _;
+    }
 
     modifier feeCheck(uint _value) {
         require(_value>= bridgeFee,"[Fee value] the current paid fee is not enough");
@@ -96,12 +151,6 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         return _LMT;
     }
 
-    function setLMT(
-        address lmtAddress
-    ) public whenNotPaused onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setLMT(lmtAddress, msg.sender);
-    }
-
     function _setLMT(address lmtAddress, address user) internal {
         _LMT = lmtAddress;
         emit TokenAddressChanged(user, _LMT);
@@ -111,15 +160,7 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         uint _amount,
         Network _destination,
         bytes32 _hashLock
-    )
-        public
-        payable
-        feeCheck(msg.value)
-        whenNotPaused
-        tokensTransferable(msg.sender, _amount)
-
-        returns (bytes32)
-    {
+    ) public payable feeCheck(msg.value) whenNotPaused  tokensTransferable(msg.sender, _amount) returns (bytes32) {
         return
             _requestTransaction(msg.sender, _amount, _destination, _hashLock);
     }
@@ -172,8 +213,7 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         Network _destination,
         bytes32 _hashLock,
         bytes32 _transferId
-    ) external payable feeCheck(msg.value) //onlyValidator(msg.sender)
-    {
+    ) external payable feeCheck(msg.value) whenNotPaused {
         uint balance = IERC20(_LMT).balanceOf(address(this)) - debt;
         require(_amount <= balance, "[Bridge] Not enough balance in bridge ");
         require(
@@ -233,50 +273,53 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
     function setDestinationAddress(
         Network _network,
         address _bridgeAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public whenNotPaused onlyRole(DEFAULT_ADMIN_ROLE) {
         bridgesAddresses[_network] = _bridgeAddress;
     }
 
-    function withdraw(bytes32 _transferId) public nonReentrant {
-        //checks
-        require(
-            withdrawableMapping[msg.sender] > 0,
-            "[Bridge] No funds to widthdraw"
-        );
-        require(
-            InboundTxMapping[_transferId].exists == true,
-            "[Bridge] Transfer ID doesn't exists"
-        );
-        require(
-            block.timestamp > InboundTxMapping[_transferId].timeLock,
-            "[Bridge] Timelock didn't expired"
-        );
-        require(
-            InboundTxMapping[_transferId].withdrawn == false,
-            "[Bridge] Transfer ID was already widthdrawn"
-        );
-        require(
-            InboundTxMapping[_transferId].refunded == false,
-            "[Bridge] Transfer ID was refunded"
-        );
-        require(
-            InboundTxMapping[_transferId].isDone == false,
-            "[Bridge] Transfer ID was already commited"
-        );
-        //Effects
-        uint amounToTx = withdrawableMapping[msg.sender];
-        withdrawableMapping[msg.sender] = 0;
-        debt -= amounToTx;
-        //Interactions
-        emit Widthdraw(msg.sender, amounToTx);
-        IERC20(_LMT).transfer(msg.sender, amounToTx);
+    function withdraw(
+        bytes32 _transferId
+    ) public checksForWithdraw(_transferId,msg.sender) whenNotPaused nonReentrant {    
+        InboundTxMapping[_transferId].withdrawnx` = true;
+        InboundTxMapping[_transferId].isDone = true;
+        _requestWithdraw(_transferId,msg.sender);  
     }
 
+    function requestRefund( 
+        bytes32 _transferId
+    ) external checksForRefund(_transferId,msg.sender) whenNotPaused nonReentrant {
+        TransferIDMapping[_transferId].refunded = true;
+        TransferIDMapping[_transferId].isDone = true;
+        _requestWithdraw(_transferId,msg.sender);
+        emit RefundRequested(msg.sender,_transferId);
+    }
+
+    function _requestRefund(
+        bytes32 _transferId,
+        address _sender
+    ) internal {
+        uint amount = TransferIDMapping[_transferId].amount;
+        IERC20(_LMT).transfer(_sender, amount);
+    }
+
+
+    function _requestWithdraw(
+        bytes32 _transferId,
+        address _sender
+    ) internal {
+        uint amounToTx = withdrawableMapping[_sender];
+        withdrawableMapping[_sender] = 0;
+        debt -= amounToTx;
+        //Interactions
+        emit TransferFromBridge(_sender, amounToTx);
+        IERC20(_LMT).transfer(_sender, amounToTx);
+        emit Widthdraw(msg.sender, amounToTx);
+    }
     function getBalance() external view onlyRole(DEFAULT_ADMIN_ROLE) returns(uint){
         return address(this).balance;
     }
 
-    function withdrawFees() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawFees() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
         _withdrawFees(payable(msg.sender));
     }
 

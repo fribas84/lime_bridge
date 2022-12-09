@@ -1,0 +1,294 @@
+{
+ "stats": {
+  "suites": 7,
+  "tests": 20,
+  "passes": 20,
+  "pending": 0,
+  "failures": 0
+ },
+ "tests": [
+  {
+   "title": "LMT address in Bridge contract should be the same as the deployed",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests LMT address in Bridge contract should be the same as the deployed",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Lock Time should be equal to 15 seconds",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests Lock Time should be equal to 15 seconds",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Pausable",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests Pausable",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Resumable",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests Resumable",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 sets an allowance to bridge contract",
+   "fullTitle": "Bridge Bridge Transfer Account1 sets an allowance to bridge contract",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 sets a transfer request and event NewTransferBridgeRequest is emitted",
+   "fullTitle": "Bridge Bridge Transfer Account1 sets a transfer request and event NewTransferBridgeRequest is emitted",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Request Transaction should be reverted when allowance is not enough",
+   "fullTitle": "Bridge Bridge Transfer Request Transaction should be reverted when allowance is not enough",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Request Transaction should failed when is repited",
+   "fullTitle": "Bridge Bridge Transfer Request Transaction should failed when is repited",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Balance in Bridges should be LMT 1.000.000",
+   "fullTitle": "Bridge Two bridges  Balance in Bridges should be LMT 1.000.000",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "User should be able to execute initDestinationTransfer in Bridge 2",
+   "fullTitle": "Bridge Two bridges  User should be able to execute initDestinationTransfer in Bridge 2",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Destination Bridge should transfer the same amount of sent tokens to address",
+   "fullTitle": "Bridge Two bridges  Destination Bridge should transfer the same amount of sent tokens to address",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Widthdraw should revert if Timelock is not expired",
+   "fullTitle": "Bridge Two bridges  Widthdraw should revert if Timelock is not expired",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "requestTransaction should revert when fee is not enough",
+   "fullTitle": "Bridge Balance and Fees requestTransaction should revert when fee is not enough",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Bridges balances should increase after a full transaction is done",
+   "fullTitle": "Bridge Balance and Fees Bridges balances should increase after a full transaction is done",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Owner should be able to mint tokens to Account1",
+   "fullTitle": "LMT Token Basic ERC20 functions Owner should be able to mint tokens to Account1",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Owner should be able to pause the LMT contract",
+   "fullTitle": "LMT Token Basic ERC20 functions Owner should be able to pause the LMT contract",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Owner should be able to resume the LMT contract",
+   "fullTitle": "LMT Token Basic ERC20 functions Owner should be able to resume the LMT contract",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 should be able to transfer to  Account2",
+   "fullTitle": "LMT Token Basic ERC20 functions Account1 should be able to transfer to  Account2",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner",
+   "fullTitle": "LMT Token Basic ERC20 functions Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account2 cannot do a transferfrom Account1 without allowance",
+   "fullTitle": "LMT Token Basic ERC20 functions Account2 cannot do a transferfrom Account1 without allowance",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  }
+ ],
+ "failures": [],
+ "passes": [
+  {
+   "title": "LMT address in Bridge contract should be the same as the deployed",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests LMT address in Bridge contract should be the same as the deployed",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Lock Time should be equal to 15 seconds",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests Lock Time should be equal to 15 seconds",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Pausable",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests Pausable",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Resumable",
+   "fullTitle": "Bridge Bridge Settings and basic functionallity tests Resumable",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 sets an allowance to bridge contract",
+   "fullTitle": "Bridge Bridge Transfer Account1 sets an allowance to bridge contract",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 sets a transfer request and event NewTransferBridgeRequest is emitted",
+   "fullTitle": "Bridge Bridge Transfer Account1 sets a transfer request and event NewTransferBridgeRequest is emitted",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Request Transaction should be reverted when allowance is not enough",
+   "fullTitle": "Bridge Bridge Transfer Request Transaction should be reverted when allowance is not enough",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Request Transaction should failed when is repited",
+   "fullTitle": "Bridge Bridge Transfer Request Transaction should failed when is repited",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Balance in Bridges should be LMT 1.000.000",
+   "fullTitle": "Bridge Two bridges  Balance in Bridges should be LMT 1.000.000",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "User should be able to execute initDestinationTransfer in Bridge 2",
+   "fullTitle": "Bridge Two bridges  User should be able to execute initDestinationTransfer in Bridge 2",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Destination Bridge should transfer the same amount of sent tokens to address",
+   "fullTitle": "Bridge Two bridges  Destination Bridge should transfer the same amount of sent tokens to address",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Widthdraw should revert if Timelock is not expired",
+   "fullTitle": "Bridge Two bridges  Widthdraw should revert if Timelock is not expired",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "requestTransaction should revert when fee is not enough",
+   "fullTitle": "Bridge Balance and Fees requestTransaction should revert when fee is not enough",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Bridges balances should increase after a full transaction is done",
+   "fullTitle": "Bridge Balance and Fees Bridges balances should increase after a full transaction is done",
+   "file": "test/BridgeTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Owner should be able to mint tokens to Account1",
+   "fullTitle": "LMT Token Basic ERC20 functions Owner should be able to mint tokens to Account1",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Owner should be able to pause the LMT contract",
+   "fullTitle": "LMT Token Basic ERC20 functions Owner should be able to pause the LMT contract",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Owner should be able to resume the LMT contract",
+   "fullTitle": "LMT Token Basic ERC20 functions Owner should be able to resume the LMT contract",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 should be able to transfer to  Account2",
+   "fullTitle": "LMT Token Basic ERC20 functions Account1 should be able to transfer to  Account2",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner",
+   "fullTitle": "LMT Token Basic ERC20 functions Account1 should be able to generate an allowance to tranfer to Account2, and this be executed by Owner",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Account2 cannot do a transferfrom Account1 without allowance",
+   "fullTitle": "LMT Token Basic ERC20 functions Account2 cannot do a transferfrom Account1 without allowance",
+   "file": "test/TokenTests.js",
+   "currentRetry": 0,
+   "err": {}
+  }
+ ]
+}
