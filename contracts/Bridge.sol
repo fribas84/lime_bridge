@@ -2,12 +2,13 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
-contract Bridge is AccessControl, Pausable, ReentrancyGuard {
+contract Bridge is Ownable, Pausable, ReentrancyGuard {
+     
     uint8 public constant LOCK_TIME = 15 seconds;
     enum Network {
         GOERLI,
@@ -132,11 +133,11 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         _;
     }
 
-    constructor(address lmtAddress, Network _myNetwork) {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    constructor(address lmtAddress, Network _myNetwork) Ownable() {
         _setLMT(lmtAddress, msg.sender);
         myNetwork = _myNetwork;
         bridgesAddresses[myNetwork] = address(this);
+
     }
 
     function getLMT() public view returns (address) {
@@ -254,18 +255,18 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         withdrawableMapping[_sender] = _amount;
     }
 
-    function pause() public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() public virtual onlyOwner {
         _pause();
     }
 
-    function unpause() public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() public virtual onlyOwner {
         _unpause();
     }
 
     function setDestinationAddress(
         Network _network,
         address _bridgeAddress
-    ) public whenNotPaused onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public whenNotPaused onlyOwner {
         bridgesAddresses[_network] = _bridgeAddress;
     }
 
@@ -307,11 +308,11 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         IERC20(_LMT).transfer(_sender, amounToTx);
         emit Widthdraw(msg.sender, amounToTx);
     }
-    function getBalance() external view onlyRole(DEFAULT_ADMIN_ROLE) returns(uint){
+    function getBalance() external view returns(uint){
         return address(this).balance;
     }
 
-    function withdrawFees() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawFees() external onlyOwner nonReentrant  {
         _withdrawFees(payable(msg.sender));
     }
 

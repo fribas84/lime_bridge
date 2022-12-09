@@ -82,6 +82,12 @@ const wait = (milliseconds) => {
             expect(status).to.equal(true);
 
         }),
+        it("Pausable not owner cannot pause the contract", async ()=>{
+            const {bridge,account2} = await loadFixture(ContractsTkn);
+            await expect(bridge.connect(account2).pause()).to.revertedWith("Ownable: caller is not the owner");
+
+
+        }),
         it("Resumable", async ()=>{
             const {bridge} = await loadFixture(ContractsTkn);
             await bridge.pause();
@@ -332,7 +338,7 @@ const wait = (milliseconds) => {
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
             await expect(bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId)).to.rejectedWith("[Fee value] the current paid fee is not enough");
-        })
+        }),
         it("Bridges balances should increase after a full transaction is done", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
             const allowTkns = ethers.utils.parseEther("2000");
@@ -357,6 +363,50 @@ const wait = (milliseconds) => {
             const bridge2EthBalFinal = await bridge2.getBalance();
             expect(bridge1EthBalFinal).to.greaterThan(bridge1EthBalInitial);
             expect(bridge2EthBalFinal).to.greaterThan(bridge2EthBalInitial);
+        }),
+        it("Admin can widthdraw charged fees", async () =>{
+            const {limeToken1,owner,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const bridge1EthBalInitial = await bridge1.getBalance();
+            const bridge2EthBalInitial = await bridge2.getBalance();
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
+            const txReceipt2 = await initDestinationTransfer.wait();
+            const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
+            expect(user).to.equal(initDestinationTransferResult.args.user);
+            await wait(20000);
+            const withdrawRequest = await bridge2.connect(account1).withdraw(transferId);
+            await withdrawRequest.wait();
+            const bridge1EthBalFinal = await bridge1.getBalance();
+            const bridge2EthBalFinal = await bridge2.getBalance();
+            expect(bridge1EthBalFinal).to.greaterThan(bridge1EthBalInitial);
+            expect(bridge2EthBalFinal).to.greaterThan(bridge2EthBalInitial);
+            const ownerBalance = await ethers.provider.getBalance(owner.address);
+            await bridge1.withdrawFees();
+            await bridge2.withdrawFees();
+            const ownerBalance2 = await ethers.provider.getBalance(owner.address);
+            expect(ownerBalance2).to.greaterThan(ownerBalance);
+            const bridge1EthBalAfterW = await bridge1.getBalance();
+            const bridge2EthBalAfterW = await bridge2.getBalance(); 
+            expect(bridge1EthBalAfterW).to.equal(0);
+            expect(bridge2EthBalAfterW).to.equal(0);
+        }),
+        it("Not Admin cannot widthdraw charged fees", async () =>{
+            const {limeToken1,owner,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const options = {value: ethers.utils.parseEther("0.001")};
+            await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            await  expect(bridge1.connect(account1).withdrawFees()).to.revertedWith("Ownable: caller is not the owner");
         })
 
     })
