@@ -69,7 +69,7 @@ const wait = (milliseconds) => {
             const {limeToken,bridge} = await loadFixture(ContractsTkn);
             const addr = await bridge.getLMT();
             expect(addr).to.equal(limeToken.address);
-        })
+        }),
         it("Lock Time should be equal to 15 seconds", async ()=>{
             const {limeToken,bridge} = await loadFixture(ContractsTkn);
             const lockTime = await bridge.LOCK_TIME();
@@ -91,6 +91,7 @@ const wait = (milliseconds) => {
             status = await bridge.paused();
             expect(status).to.equal(false);
         })
+
     })
 
     describe("Bridge Transfer", async () => {
@@ -186,8 +187,6 @@ const wait = (milliseconds) => {
             await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 1;
-            const bal = await limeToken1.balanceOf(account1.address);
-            const balBridge2 = await limeToken2.balanceOf(bridge2.address);
             const options = {value: ethers.utils.parseEther("0.001")};
             const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
             const txReceipt = await newRequestTransaction.wait();
@@ -202,6 +201,74 @@ const wait = (milliseconds) => {
             await withdrawRequest.wait();
             const newBal = await limeToken2.balanceOf(account1.address);
             expect(newBal).to.equal(allowTkns);   
+        }),
+
+        it("Cannot execute 2 transactions at the same time", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
+            const txReceipt2 = await initDestinationTransfer.wait();
+            const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
+            expect(user).to.equal(initDestinationTransferResult.args.user);
+            await wait(20000);
+            const withdrawRequest = await bridge2.connect(account1).withdraw(transferId);
+            await withdrawRequest.wait();
+            const newBal = await limeToken2.balanceOf(account1.address);
+            expect(newBal).to.equal(allowTkns); 
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            await expect(bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options)).to.rejectedWith("[Bridge] Transfer already in progress");
+        }),
+
+        it("Cannot widthdraw when a tx was already widthdrawn", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const bridge1EthBalInitial = await bridge1.getBalance();
+            const bridge2EthBalInitial = await bridge2.getBalance();
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
+            const txReceipt2 = await initDestinationTransfer.wait();
+            const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
+            expect(user).to.equal(initDestinationTransferResult.args.user);
+            await wait(20000);
+            const withdrawRequest = await bridge2.connect(account1).withdraw(transferId);
+            await withdrawRequest.wait();
+            await expect(bridge2.connect(account1).withdraw(transferId)).to.revertedWith("[Bridge] Transfer ID was already widthdrawn");
+        }),
+        it("Another user cannot widthdraw transactions from others", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const bridge1EthBalInitial = await bridge1.getBalance();
+            const bridge2EthBalInitial = await bridge2.getBalance();
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const initDestinationTransfer = await bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId,options);
+            const txReceipt2 = await initDestinationTransfer.wait();
+            const [initDestinationTransferResult] = txReceipt2.events.filter((el)=>{ return el.event == 'NewTransferAvailable'});
+            expect(user).to.equal(initDestinationTransferResult.args.user);
+            await wait(20000);
+            await expect(bridge2.withdraw(transferId)).to.revertedWith("[Bridge] User is not the owner of this Transaction Id");
+            
         }),
 
         it("Widthdraw should revert if Timelock is not expired", async () =>{
@@ -224,6 +291,23 @@ const wait = (milliseconds) => {
             await expect(bridge2.connect(account1).withdraw(transferId)).to.rejectedWith("[Bridge] Timelock didn't expired");
         })
     }),
+    describe("Refund", async () => {
+        it("User should be able to request a refund if operation failes", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            await expect(bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId)).to.rejectedWith("[Fee value] the current paid fee is not enough");
+            
+
+        })
+    })
     describe("Balance and Fees",async ()=>{
         it("requestTransaction should revert when fee is not enough", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
@@ -235,8 +319,20 @@ const wait = (milliseconds) => {
             const balBridge2 = await limeToken2.balanceOf(bridge2.address);
             const options = {value: ethers.utils.parseEther("0.00001")};
             await expect(bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options)).to.revertedWith("[Fee value] the current paid fee is not enough");
-
         }),
+        it("Init dest tx should revert if fee is not enough should revert", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            await expect(bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId)).to.rejectedWith("[Fee value] the current paid fee is not enough");
+        })
         it("Bridges balances should increase after a full transaction is done", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
             const allowTkns = ethers.utils.parseEther("2000");
