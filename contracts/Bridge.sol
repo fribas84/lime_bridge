@@ -27,7 +27,7 @@ contract Bridge is Ownable, Pausable, ReentrancyGuard {
         bool isDone;
         bool exists;
     } 
-    uint bridgeFee = 1000000 gwei;
+    uint bridgeFee = 1000 gwei;
     mapping(address => uint) withdrawableMapping;
     uint debt;
     Network immutable myNetwork;
