@@ -106,10 +106,6 @@ contract Bridge is Ownable, Pausable, ReentrancyGuard {
             "[Bridge] Transfer ID doesn't exists"
         );
         require(
-            block.timestamp > TransferIDMapping[_transferId].timeLock,
-            "[Bridge] Timelock didn't expired"
-        );
-        require(
             TransferIDMapping[_transferId].refunded == false,
             "[Bridge] Transfer ID was refunded"
         );
@@ -283,7 +279,7 @@ contract Bridge is Ownable, Pausable, ReentrancyGuard {
     ) external checksForRefund(_transferId,msg.sender) whenNotPaused nonReentrant {
         TransferIDMapping[_transferId].refunded = true;
         TransferIDMapping[_transferId].isDone = true;
-        _requestWithdraw(_transferId,msg.sender);
+        _requestRefund(_transferId,msg.sender);
         emit RefundRequested(msg.sender,_transferId);
     }
 

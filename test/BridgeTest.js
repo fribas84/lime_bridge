@@ -85,8 +85,6 @@ const wait = (milliseconds) => {
         it("Pausable not owner cannot pause the contract", async ()=>{
             const {bridge,account2} = await loadFixture(ContractsTkn);
             await expect(bridge.connect(account2).pause()).to.revertedWith("Ownable: caller is not the owner");
-
-
         }),
         it("Resumable", async ()=>{
             const {bridge} = await loadFixture(ContractsTkn);
@@ -96,8 +94,15 @@ const wait = (milliseconds) => {
             await bridge.unpause();
             status = await bridge.paused();
             expect(status).to.equal(false);
+        }),
+        it("Not Ownwer cannot resume the bridge", async ()=>{
+            const {bridge,account1} = await loadFixture(ContractsTkn);
+            await bridge.pause();
+            let status = await bridge.paused();
+            expect(status).to.equal(true);
+            await expect(bridge.connect(account1).unpause()).to.revertedWith("Ownable: caller is not the owner");
+            expect(status).to.equal(true);
         })
-
     })
 
     describe("Bridge Transfer", async () => {
@@ -298,9 +303,10 @@ const wait = (milliseconds) => {
         })
     }),
     describe("Refund", async () => {
-        it("User should be able to request a refund if operation failes", async () =>{
+        it("User should be able to request a refund if operation fails", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
             const allowTkns = ethers.utils.parseEther("2000");
+            const balanceInitial= await limeToken1.balanceOf(account1.address);
             await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
             const hashlock  = newHashLock();
             const destNetwork = 1;
@@ -309,11 +315,52 @@ const wait = (milliseconds) => {
             const txReceipt = await newRequestTransaction.wait();
             const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
             const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
-            await expect(bridge2.connect(account1).initDestinationTransfer(amount,timelock,destination,_hashlock,transferId)).to.rejectedWith("[Fee value] the current paid fee is not enough");
-            
+            const balanceBeforeRefund = await limeToken1.balanceOf(account1.address);
+            //due to this will not fail, for mocking purposes the request for the bridge 2 will no be triggered, so the user can request the refund
+            await bridge1.connect(account1).requestRefund(transferId);
+            const balanceBeforeAfter = await limeToken1.balanceOf(account1.address);
+            expect(balanceBeforeAfter).to.eql(balanceInitial);
+            expect(balanceBeforeRefund).to.lessThan(balanceInitial);
 
+        }),
+        it("User cannot request a refund of a TX from another user", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1,account2} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            const balanceInitial= await limeToken1.balanceOf(account1.address);
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const balanceBeforeRefund = await limeToken1.balanceOf(account1.address);
+            //due to this will not fail, for mocking purposes the request for the bridge 2 will no be triggered, so the user can request the refund
+            await expect(bridge1.connect(account2).requestRefund(transferId)).to.revertedWith("[Bridge] User is not the owner of this Transaction Id");
+        }),
+        it("User cannor refund 2 times the same tx", async () =>{
+            const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
+            const allowTkns = ethers.utils.parseEther("2000");
+            const balanceInitial= await limeToken1.balanceOf(account1.address);
+            await limeToken1.connect(account1).approve(bridge1.address,allowTkns);
+            const hashlock  = newHashLock();
+            const destNetwork = 1;
+            const options = {value: ethers.utils.parseEther("0.001")};
+            const newRequestTransaction = await bridge1.connect(account1).requestTransaction(allowTkns,destNetwork,hashlock.hash,options);
+            const txReceipt = await newRequestTransaction.wait();
+            const [newTransferBridgeRequest] = txReceipt.events.filter((el)=>{ return el.event == 'NewTransferBridgeRequest'});
+            const [user,amount,destination,timelock,_hashlock,transferId] = newTransferBridgeRequest.args
+            const balanceBeforeRefund = await limeToken1.balanceOf(account1.address);
+            //due to this will not fail, for mocking purposes the request for the bridge 2 will no be triggered, so the user can request the refund
+            await bridge1.connect(account1).requestRefund(transferId);
+            const balanceBeforeAfter = await limeToken1.balanceOf(account1.address);
+            expect(balanceBeforeAfter).to.eql(balanceInitial);
+            expect(balanceBeforeRefund).to.lessThan(balanceInitial);
+            await expect(bridge1.connect(account1).requestRefund(transferId)).to.rejectedWith("[Bridge] Transfer ID was refunded");
         })
     })
+    
     describe("Balance and Fees",async ()=>{
         it("requestTransaction should revert when fee is not enough", async () =>{
             const {limeToken1,limeToken2,bridge1,bridge2,account1} = await loadFixture(Tkn2BridgesFixture);
