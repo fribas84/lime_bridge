@@ -132,14 +132,6 @@ contract Bridge is AccessControl, Pausable, ReentrancyGuard {
         _;
     }
 
-    modifier futureTimelock(uint256 _time) {
-        require(
-            _time > block.timestamp,
-            "[Timelock] Timelock time must be in the future"
-        );
-        _;
-    }
-
     constructor(address lmtAddress, Network _myNetwork) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setLMT(lmtAddress, msg.sender);
