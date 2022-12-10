@@ -1,42 +1,28 @@
-npx hardhat deploy-testnets --network goerli
-Nothing to compile
-Deploying contracts with the account: 0xb1BE81ea69A0D295B1F6d44b3ddD1D0bE8864574
-Account balance: 618792857897972124
-Waiting for Lime Token deployment...
-Lime Token Contract address:  0x0703BAF62940ba2f5e56D7ec6B787aAEb6d07350
-Deploying Bridge Contract with the account: 0xb1BE81ea69A0D295B1F6d44b3ddD1D0bE8864574
-Account balance: 618792757564976169
-Waiting for Bridge deployment...
-Bridge Contract address:  0x25BA2516f194D87F3B14b8F422c4cE0938dD1B2A
-Minting tokens....
-Balance of Deployer:  0.0
-Balance of Bridge:  0.0
+ ~/projects/lime_bridge   main  npx hardhat deploy-testnets --network goerli
+
+Lime Token Contract address:  0x485a06975409C314ee6f748657A8528764Db8EEf
+Bridge Contract address:  0x1c11F74BBFCb224d70b8351799c51c46bCd65F15
 
 
-npx hardhat verify 0x0703BAF62940ba2f5e56D7ec6B787aAEb6d07350 --contract contracts/LimeToken.sol:LimeToken --network goerli
-npx hardhat verify 0x25BA2516f194D87F3B14b8F422c4cE0938dD1B2A --contract contracts/Bridge.sol:Bridge --constructor-args arguments.js  --network goerli
+
+
+
+
+
+npx hardhat verify 0x485a06975409C314ee6f748657A8528764Db8EEf --contract contracts/LimeToken.sol:LimeToken --network goerli
+npx hardhat verify 0x1c11F74BBFCb224d70b8351799c51c46bCd65F15 --contract contracts/Bridge.sol:Bridge --constructor-args scripts/arguments.js --network goerli
 
 
 https://goerli.etherscan.io/address/0x0703BAF62940ba2f5e56D7ec6B787aAEb6d07350#code
 https://goerli.etherscan.io/address/0x25BA2516f194D87F3B14b8F422c4cE0938dD1B2A#code
 
 
-npx hardhat deploy-testnets --network mumbai
-Nothing to compile
-Deploying contracts with the account: 0xb1BE81ea69A0D295B1F6d44b3ddD1D0bE8864574
-Account balance: 900000000000000000
-Waiting for Lime Token deployment...
-Lime Token Contract address:  0x0703BAF62940ba2f5e56D7ec6B787aAEb6d07350
-Deploying Bridge Contract with the account: 0xb1BE81ea69A0D295B1F6d44b3ddD1D0bE8864574
-Account balance: 895342447472054685
-Waiting for Bridge deployment...
-Bridge Contract address:  0x25BA2516f194D87F3B14b8F422c4cE0938dD1B2A
-Minting tokens....
-Balance of Deployer:  0.0
-Balance of Bridge:  0.0
-
-npx hardhat verify 0x0703BAF62940ba2f5e56D7ec6B787aAEb6d07350 --contract contracts/LimeToken.sol:LimeToken --network mumbai
-npx hardhat verify 0x25BA2516f194D87F3B14b8F422c4cE0938dD1B2A --contract contracts/Bridge.sol:Bridge --constructor-args arguments.js  --network mumbai
+ ~/projects/lime_bridge   main  npx hardhat deploy-testnets --network mumbai
+Lime Token Contract address:  0x99311A5C04998599e5CeD1C32F9ffe394A02a7E9
+Bridge Contract address:  0x7e3084163CccE04612794B0C84142F16871A49f2
 
 https://mumbai.polygonscan.com/address/0x0703BAF62940ba2f5e56D7ec6B787aAEb6d07350#code
 https://mumbai.polygonscan.com/address/0x25BA2516f194D87F3B14b8F422c4cE0938dD1B2A#code
+
+npx hardhat verify 0x99311A5C04998599e5CeD1C32F9ffe394A02a7E9 --contract contracts/LimeToken.sol:LimeToken --network mumbai
+npx hardhat verify 0x7e3084163CccE04612794B0C84142F16871A49f2 --contract contracts/Bridge.sol:Bridge --constructor-args scripts/arguments.js --network mumbai
