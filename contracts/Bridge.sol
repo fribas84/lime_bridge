@@ -27,7 +27,7 @@ contract Bridge is Ownable, Pausable, ReentrancyGuard {
         bool isDone;
         bool exists;
     } 
-    uint bridgeFee = 1000 gwei;
+    uint bridgeFee = 50000 gwei;
     mapping(address => uint) withdrawableMapping;
     uint debt;
     Network immutable myNetwork;
@@ -50,6 +50,7 @@ contract Bridge is Ownable, Pausable, ReentrancyGuard {
     event BridgeFundsWidthdraw(address _user, uint amount);
     event TransferFromBridge(address user, uint amount);
     event RefundRequested(address user, bytes32 _transferId);
+    event TransactionCommited(bytes32 transactionId);
 
     // The Validator modifier will be use when using an external validator.
 
@@ -316,4 +317,11 @@ contract Bridge is Ownable, Pausable, ReentrancyGuard {
         (bool sent, bytes memory data) = _to.call{value: address(this).balance }("");
         require(sent, "[Fee widthdraw] Failed to send Ether");
     }
+
+    function commitTransaction(bytes32 _transferId) checksForRefund(_transferId, msg.sender)  external payable {
+        TransferIDMapping[_transferId].isDone = true;
+        TransferIDMapping[_transferId].withdrawn = true;
+        emit TransactionCommited(_transferId);
+    }
+
 }
