@@ -35,11 +35,14 @@ module.exports = {
       mainnet: ETHERSCAN_API_KEY,
       goerli: ETHERSCAN_API_KEY,
       polygon: POLYGON_API_KEY,
-      mumbai: POLYGON_API_KEY
-    } 
-  
+      polygonMumbai: POLYGON_API_KEY
+    },
   },
-    
 };
 
+task("deploy-testnets", "Deploys contract on a provided network")
+    .setAction(async (taskArguments, hre, runSuper) => {
+        const deployContract = require("./scripts/deployTestnet");
+        await deployContract(taskArguments);
+    });
 
